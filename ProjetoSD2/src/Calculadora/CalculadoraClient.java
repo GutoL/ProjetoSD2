@@ -19,12 +19,12 @@ public class CalculadoraClient {
         
         md.client.startClient();
         
-        Numeros n = new Numeros(2, 3);
-        String op = "soma";
+        Numeros n = new Numeros(10, 3);
+        String op = "div";
         md.client.sendMessage(n, op, new HandlerCliente(n, op) , Resultado.class);
         
-        Numeros n2 = new Numeros(5, 8);
-        String op2 = "soma";
+        Numeros n2 = new Numeros(55, 800);
+        String op2 = "mult";
         md.client.sendMessage(n2, op2, new HandlerCliente(n2, op2) , Resultado.class);
         
     

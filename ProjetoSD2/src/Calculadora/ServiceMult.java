@@ -18,7 +18,7 @@ public class ServiceMult implements ServerHandler {
     @Override
     public Object handler(Object o) {
         Numeros n = (Numeros) o;
-        Resultado s = new Resultado(n.a+n.b);
+        Resultado s = new Resultado(n.a*n.b);
         return s;
     }
 
