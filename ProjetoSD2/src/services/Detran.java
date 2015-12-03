@@ -31,7 +31,8 @@ public class Detran implements ServerHandler {
             url = new URL("http://online4.detran.pe.gov.br//ServicosWeb/Veiculo/frmDetalhamentoDebitos.aspx?pPlaca="+ perg.placa.replace("-", "") +"&pExtrato=N&pTerceiros=I&pPlacaOutraUF=N");
             
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
+            conn.setConnectTimeout(3000); // connectTimeout
+            conn.setReadTimeout(3000); // socketTimeout
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
