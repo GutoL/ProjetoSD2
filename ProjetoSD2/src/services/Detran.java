@@ -13,7 +13,7 @@ import middleware.server.ServerHandler;
 
 /**
  *
- * @author Guto Leoni
+ * @author LIGAR
  */
 public class Detran implements ServerHandler {
     
@@ -31,8 +31,8 @@ public class Detran implements ServerHandler {
             url = new URL("http://online4.detran.pe.gov.br//ServicosWeb/Veiculo/frmDetalhamentoDebitos.aspx?pPlaca="+ perg.placa.replace("-", "") +"&pExtrato=N&pTerceiros=I&pPlacaOutraUF=N");
             
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(3000); // connectTimeout
-            conn.setReadTimeout(3000); // socketTimeout
+            conn.setConnectTimeout(5000); // connectTimeout
+            conn.setReadTimeout(5000); // socketTimeout
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
@@ -67,57 +67,50 @@ public class Detran implements ServerHandler {
                         aux.remove(i);
                     else aux.set(i, removeAcentos(aux.get(i)));
                 }  
-            } 
+            }  
             
-            if (!legend) return "Placa nao existe na base de dados do Detran".getBytes();
+            if (!legend) return new Resposta("Placa nao existe na base de dados do Detran");
         
         } catch (java.net.SocketTimeoutException e){
-            Resposta resp = new Resposta("Servidor sem internet.");
-            return resp;
+            return new Resposta("Servidor sem internet. Timeout atingido.");
+        } catch (Exception e) {}
             
-        } catch (Exception ex) {
-            Resposta resp = new Resposta("Servidor sem internet.");
-            return resp;
-        }
-        
         if (aux.isEmpty()) {
-            Resposta resp = new Resposta("Servidor sem internet.");
-            return resp;
+            return new Resposta("Servidor sem internet.");
         }
-        
+
         for (int i=0; i<aux.size(); i++){
-            
+
             if (aux.get(i).contains("Detalhamento de Debitos")) importante += "\tDetalhamento de Debitos - Placa: " + aux.get(i+1) + "\n";
-            
+
             else if (aux.get(i).contains("Restricao")){
                 if (aux.get(i+1).contains("LICENCIAMENTO")) {
                     importante += "\tRESTRICAO: NADA CONSTA\n"; i--;
                 }
                 else importante += "\tRESTRICAO: "+ aux.get(i+1) +"\n";
             }
-            
+
             else if (aux.get(i).contains("LICENCIAMENTO")) {
                 if(!aux.get(i+1).contains("NADA CONSTA")) importante += "\t" + aux.get(i).replace(":", "") + ": HA DEBITOS\n";
                 else importante += "\t" + aux.get(i).replace(":", "") + ": " + aux.get(i+1) + "\n";
             }
-            
+
             else if (aux.get(i).contains("TAXAS DETRAN")) importante += "\t" + aux.get(i).replace(":", "") + ": " + aux.get(i+1) + "\n";
-            
+
             else if (aux.get(i).contains("Debitos")) {
                 importante += "\n\tDebitos\n"; i--;
             }
-            
+
             else if (aux.get(i).contains("MULTAS")) importante += "\t" + aux.get(i).replace(":", "") + ": " + aux.get(i+1) + "\n";
-            
+
             else if (aux.get(i).contains("Total em Cota Unica")) {
                 importante += "\t" + aux.get(i).replace(":", "") + ": " + aux.get(i+1) + "\n"; i--;
             }
-            
+
             i++;
         }
         
-        Resposta resp = new Resposta(importante);
-        return resp;
+        return new Resposta(importante);
     }
     
     public static String removeAcentos(String str) {
